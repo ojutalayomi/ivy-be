@@ -24,20 +24,20 @@ VALUES
 -- ============================================
 INSERT INTO diets (
     id, name, title, description, available_papers,
-    reg_start, reg_deadline, revision_start, revision_deadline, completion_date
+    reg_start, reg_deadline, revision_start, revision_deadline, completion_date, template
 )
 VALUES
     (18, 'June 2025 Diet', 'June Diet 2025',
      'Mid-year registration window for ACCA students. Includes full revision bootcamp access.',
      ARRAY['QM','MB','OC','AP','GE','TD'],
      '2025-03-01 00:00:00', '2025-05-20 23:59:00',
-     '2025-05-25 00:00:00', '2025-06-10 23:59:00', '2025-06-15 00:00:00'),
+     '2025-05-25 00:00:00', '2025-06-10 23:59:00', '2025-06-15 00:00:00', 'standard'),
 
     (29, 'December 2025 Diet', 'December Diet 2025',
      'End-year exam diet. Includes advanced professional-level papers.',
      ARRAY['QFT','AB','CSS','PSE','ACB','AMS'],
      '2025-08-01 00:00:00', '2025-11-20 23:59:00',
-     '2025-11-25 00:00:00', '2025-12-10 23:59:00', '2025-12-15 00:00:00');
+     '2025-11-25 00:00:00', '2025-12-10 23:59:00', '2025-12-15 00:00:00', 'advanced');
 
 
 
@@ -74,7 +74,12 @@ VALUES
     (65, 'Mr', 'Chinedu', 'Opara', 'c.opara@academy.com', '08082223344',
      '9b74c9897bac770ffc029102a200c5de', 'INT-00003', NOW(), 'Male', '1998-03-10',
      '18 Rumuola Road, Port Harcourt', 'lite_admin', TRUE, 'Intern', 'Active',
-     '2024-06-01', 'https://example.com/photos/staff5.jpg', NOW(), NOW());
+     '2024-06-01', 'https://example.com/photos/staff5.jpg', NOW(), NOW()),
+
+    (66, 'Mr', 'Ayomide', 'Ojutalayo', 'ojutalayoayomide21@gmail.com', '09012345678',
+     'pbkdf2:sha256$260000$MzMyOTAxMjc=$e2e7c6ceb4b2e1a8f8c8b8e8e8e8e8e8', 'AYO-0001', NOW(), 'Male', '200-12-12',
+     '12 Allen Avenue, Ikeja, Lagos', 'super_admin', TRUE, 'Full-Time', 'Active',
+     NOW(), 'https://example.com/photos/staff2.jpg', NOW(), NOW());
 
 -- ============================================
 -- PART 2 STARTS & PART 1 ENDS
@@ -463,20 +468,20 @@ VALUES
 
 INSERT INTO mcq_tests (
     id, test_name, file_name, diet_name, paper_code,
-    course_spec, high_score, duration, date_uploaded, file_id
+    course_spec, high_score, pass_mark, duration, date_uploaded, file_id
 )
 VALUES
     (101, 'QM Basic Test', 'QM_test1.pdf', 'June 2025 Diet', 'QM',
-     'QM 2025_June', 30, 25, '2025-03-10', NULL),
+     'QM 2025_June', 30, 18, 25, '2025-03-10', NULL),
 
     (102, 'AP Astrophysics MCQ Set A', 'AP_setA.pdf', 'June 2025 Diet', 'AP',
-     'AP 2025_June', 40, 35, '2025-03-12', NULL),
+     'AP 2025_June', 40, 24, 35, '2025-03-12', NULL),
 
     (103, 'QFT Advanced Quantum Field Test', 'QFT_test1.pdf', 'December 2025 Diet', 'QFT',
-     'QFT 2025_Dec', 50, 45, '2025-09-15', NULL),
+     'QFT 2025_Dec', 50, 30, 45, '2025-09-15', NULL),
 
     (104, 'PSE Planetary Science Quick Quiz', 'PSE_quiz1.pdf', 'December 2025 Diet', 'PSE',
-     'PSE 2025_Dec', 35, 30, '2025-09-20', NULL);
+     'PSE 2025_Dec', 35, 21, 30, '2025-09-20', NULL);
 
 -- ==========
 -- ==========
@@ -487,36 +492,36 @@ VALUES
 
 INSERT INTO mcq_history (
     id, course_spec, score, high_score, result, code, date_taken,
-    student_id, test_id
+    student_id, test_id, status
 )
 VALUES
     -- Test 1 (QM – 30 marks)
-    (101, 'QM 2025_June', 25, 30, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-QM-001', '2025-03-15', 101, 101),
-    (102, 'QM 2025_June', 22, 30, '{"1":["A","A"],"2":["C","B"],"3":["D","C"]}', 'MCQ-QM-002', '2025-03-15', 102, 101),
-    (103, 'QM 2025_June', 27, 30, '{"1":["A","A"],"2":["B","B"],"3":["D","D"]}', 'MCQ-QM-003', '2025-03-15', 103, 101),
-    (104, 'QM 2025_June', 18, 30, '{"1":["A","B"],"2":["B","C"],"3":["C","D"]}', 'MCQ-QM-004', '2025-03-15', 104, 101),
-    (105, 'QM 2025_June', 20, 30, '{"1":["A","A"],"2":["D","B"],"3":["B","C"]}', 'MCQ-QM-005', '2025-03-15', 105, 101),
+    (101, 'QM 2025_June', 25, 30, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-QM-001', '2025-03-15', 101, 101, 'passed'),
+    (102, 'QM 2025_June', 22, 30, '{"1":["A","A"],"2":["C","B"],"3":["D","C"]}', 'MCQ-QM-002', '2025-03-15', 102, 101, 'passed'),
+    (103, 'QM 2025_June', 27, 30, '{"1":["A","A"],"2":["B","B"],"3":["D","D"]}', 'MCQ-QM-003', '2025-03-15', 103, 101, 'passed'),
+    (104, 'QM 2025_June', 18, 30, '{"1":["A","B"],"2":["B","C"],"3":["C","D"]}', 'MCQ-QM-004', '2025-03-15', 104, 101, 'passed'),
+    (105, 'QM 2025_June', 20, 30, '{"1":["A","A"],"2":["D","B"],"3":["B","C"]}', 'MCQ-QM-005', '2025-03-15', 105, 101, 'passed'),
 
     -- Test 2 (AP – 40 marks)
-    (106, 'AP 2025_June', 30, 40, '{"1":["A","A"],"2":["C","C"],"3":["D","D"]}', 'MCQ-AP-006', '2025-03-20', 106, 102),
-    (107, 'AP 2025_June', 35, 40, '{"1":["B","B"],"2":["C","C"],"3":["A","A"]}', 'MCQ-AP-007', '2025-03-20', 107, 102),
-    (108, 'AP 2025_June', 28, 40, '{"1":["C","A"],"2":["A","B"],"3":["D","D"]}', 'MCQ-AP-008', '2025-03-20', 108, 102),
-    (109, 'AP 2025_June', 40, 40, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-AP-009', '2025-03-20', 109, 102),
-    (110, 'AP 2025_June', 25, 40, '{"1":["A","C"],"2":["D","B"],"3":["C","D"]}', 'MCQ-AP-010', '2025-03-20', 110, 102),
+    (106, 'AP 2025_June', 30, 40, '{"1":["A","A"],"2":["C","C"],"3":["D","D"]}', 'MCQ-AP-006', '2025-03-20', 106, 102, 'passed'),
+    (107, 'AP 2025_June', 35, 40, '{"1":["B","B"],"2":["C","C"],"3":["A","A"]}', 'MCQ-AP-007', '2025-03-20', 107, 102, 'passed'),
+    (108, 'AP 2025_June', 28, 40, '{"1":["C","A"],"2":["A","B"],"3":["D","D"]}', 'MCQ-AP-008', '2025-03-20', 108, 102, 'passed'),
+    (109, 'AP 2025_June', 40, 40, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-AP-009', '2025-03-20', 109, 102, 'passed'),
+    (110, 'AP 2025_June', 25, 40, '{"1":["A","C"],"2":["D","B"],"3":["C","D"]}', 'MCQ-AP-010', '2025-03-20', 110, 102, 'passed'),
 
     -- Test 3 (QFT – 50 marks)
-    (111, 'QFT 2025_Dec', 45, 50, '{"1":["A","A"],"2":["C","C"],"3":["B","B"]}', 'MCQ-QFT-011', '2025-10-10', 101, 103),
-    (112, 'QFT 2025_Dec', 38, 50, '{"1":["D","C"],"2":["C","C"],"3":["B","B"]}', 'MCQ-QFT-012', '2025-10-10', 102, 103),
-    (113, 'QFT 2025_Dec', 50, 50, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-QFT-013', '2025-10-10', 103, 103),
-    (114, 'QFT 2025_Dec', 41, 50, '{"1":["A","A"],"2":["B","C"],"3":["A","B"]}', 'MCQ-QFT-014', '2025-10-10', 104, 103),
-    (115, 'QFT 2025_Dec', 37, 50, '{"1":["D","A"],"2":["C","B"],"3":["B","C"]}', 'MCQ-QFT-015', '2025-10-10', 105, 103),
+    (111, 'QFT 2025_Dec', 45, 50, '{"1":["A","A"],"2":["C","C"],"3":["B","B"]}', 'MCQ-QFT-011', '2025-10-10', 101, 103, 'passed'),
+    (112, 'QFT 2025_Dec', 38, 50, '{"1":["D","C"],"2":["C","C"],"3":["B","B"]}', 'MCQ-QFT-012', '2025-10-10', 102, 103, 'passed'),
+    (113, 'QFT 2025_Dec', 50, 50, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-QFT-013', '2025-10-10', 103, 103, 'passed'),
+    (114, 'QFT 2025_Dec', 41, 50, '{"1":["A","A"],"2":["B","C"],"3":["A","B"]}', 'MCQ-QFT-014', '2025-10-10', 104, 103, 'passed'),
+    (115, 'QFT 2025_Dec', 37, 50, '{"1":["D","A"],"2":["C","B"],"3":["B","C"]}', 'MCQ-QFT-015', '2025-10-10', 105, 103, 'passed'),
 
     -- Test 4 (PSE – 35 marks)
-    (116, 'PSE 2025_Dec', 30, 35, '{"1":["A","A"],"2":["D","C"],"3":["C","C"]}', 'MCQ-PSE-016', '2025-10-15', 106, 104),
-    (117, 'PSE 2025_Dec', 32, 35, '{"1":["A","A"],"2":["C","C"],"3":["B","B"]}', 'MCQ-PSE-017', '2025-10-15', 107, 104),
-    (118, 'PSE 2025_Dec', 27, 35, '{"1":["D","A"],"2":["C","C"],"3":["D","B"]}', 'MCQ-PSE-018', '2025-10-15', 108, 104),
-    (119, 'PSE 2025_Dec', 35, 35, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-PSE-019', '2025-10-15', 109, 104),
-    (120, 'PSE 2025_Dec', 21, 35, '{"1":["A","C"],"2":["D","B"],"3":["C","D"]}', 'MCQ-PSE-020', '2025-10-15', 110, 104);
+    (116, 'PSE 2025_Dec', 30, 35, '{"1":["A","A"],"2":["D","C"],"3":["C","C"]}', 'MCQ-PSE-016', '2025-10-15', 106, 104, 'passed'),
+    (117, 'PSE 2025_Dec', 32, 35, '{"1":["A","A"],"2":["C","C"],"3":["B","B"]}', 'MCQ-PSE-017', '2025-10-15', 107, 104, 'passed'),
+    (118, 'PSE 2025_Dec', 27, 35, '{"1":["D","A"],"2":["C","C"],"3":["D","B"]}', 'MCQ-PSE-018', '2025-10-15', 108, 104, 'passed'),
+    (119, 'PSE 2025_Dec', 35, 35, '{"1":["A","A"],"2":["B","B"],"3":["C","C"]}', 'MCQ-PSE-019', '2025-10-15', 109, 104, 'passed'),
+    (120, 'PSE 2025_Dec', 21, 35, '{"1":["A","C"],"2":["D","B"],"3":["C","D"]}', 'MCQ-PSE-020', '2025-10-15', 110, 104, 'passed');
 
 
 -- ==========
