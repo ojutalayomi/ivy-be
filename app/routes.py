@@ -42,6 +42,10 @@ def register_routes(app):
 
     swagger = Swagger(app)
 
+    @app.route("/health", methods=["GET"])
+    def health():
+        return jsonify({"status": "ok"}), 200
+
     # -----------------------------
     # Verify Payment
     # -----------------------------

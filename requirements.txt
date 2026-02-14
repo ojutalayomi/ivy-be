@@ -21,3 +21,7 @@ pillow~=11.2.1
 botocore~=1.40.55
 python-dateutil~=2.9.0.post0
 APScheduler~=3.11.0
+flask-socketio
+gevent
+gevent-websocket
+redis~=7.1.0

@@ -1,7 +1,10 @@
 import os
-from flask import Flask
+import time
+from flask import Flask, g, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_socketio import SocketIO
+
 # from flask_login import LoginManager
 from .models import db, Base, migrate
 from app.routes import register_routes
@@ -63,6 +66,7 @@ def create_postgres_db_if_not_exists(db_name, user, password, host=os.getenv("HO
 #     # Recreate any missing tables
 #     Base.metadata.create_all(engine)
 
+socketio = SocketIO()
 
 def create_app():
     load_dotenv()
@@ -92,18 +96,58 @@ def create_app():
 
     # create_versioned_table_and_scheduler(app)
 
-    # Import and register routes
-    register_routes(app)
+    # Configure CORS
+    allowed_origins = [
+        "http://localhost:5174",
+        "http://localhost:5173",
+        "https://bear-deciding-wren.ngrok-free.app",
+        "https://studentportal.ivyleaguenigeria.com",
+        "https://preview.lms.ivyleaguenigeria.com",
+        "https://preview.staff.ivyleaguenigeria.com",
+        "https://lms.ivyleaguenigeria.com",
+        "https://staff.ivyleaguenigeria.com"
+    ]
 
-
-    CORS(app, resources={r"/api/*": {
-        "origins": ["http://localhost:5174", "http://localhost:5173", "https://bear-deciding-wren.ngrok-free.app",
-                    "https://studentportal.ivyleaguenigeria.com", "https://preview.lms.ivyleaguenigeria.com",
-                    "https://preview.staff.ivyleaguenigeria.com", "https://lms.ivyleaguenigeria.com", "https://staff.ivyleaguenigeria.com"],  # Or specify your frontend domain
+    CORS(app, resources={r"*": {
+        "origins": allowed_origins,
         "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
         "allow_headers": ["Content-Type", "Access", "Authorization", "ngrok-skip-browser-warning"],
         "supports_credentials": True
-    }})  # Use specific origin instead of "*" in production
+    }})
 
+    @app.before_request
+    def log_request_start():
+        g._request_start_time = time.perf_counter()
+        print(
+            f"[HTTP] -> {request.method} {request.full_path.rstrip('?')} "
+            f"from={request.remote_addr}"
+        )
+
+    @app.after_request
+    def log_request_end(response):
+        start = getattr(g, "_request_start_time", None)
+        duration_ms = (
+            (time.perf_counter() - start) * 1000 if start is not None else 0
+        )
+        print(
+            f"[HTTP] <- {request.method} {request.path} "
+            f"status={response.status_code} duration_ms={duration_ms:.2f}"
+        )
+        return response
+
+    # Initialize SocketIO with gevent + verbose transport logs.
+    socketio.init_app(
+        app,
+        cors_allowed_origins=allowed_origins,
+        async_mode="gevent",
+        logger=True,
+        engineio_logger=True,
+    )
+
+    # Import and register routes
+    register_routes(app)
+    
+    # Import socket handlers to register them (must be after SocketIO is initialized)
+    from app import socket as socket_handlers  # noqa: F401
 
     return app

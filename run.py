@@ -1,11 +1,17 @@
-from app import create_app
+from app import create_app, socketio
 import tracemalloc
 tracemalloc.start()
 
-app = create_app()
+flask_app = create_app()
+HOST = "0.0.0.0"
+PORT = 5000
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=False) #Removing port for railway, port=5001)
+    print("[BOOT] Flask-SocketIO server starting...")
+    print(f"[BOOT] env={flask_app.config.get('ENV', 'unknown')}")
+    print(f"[BOOT] async_mode={socketio.async_mode}")
+    print(f"[BOOT] listening on http://127.0.0.1:{PORT} and http://{HOST}:{PORT}")
+    socketio.run(flask_app, host=HOST, port=PORT, debug=False)  # Gevent server handles HTTP and WebSocket
     # app.run(host="0.0.0.0", port=5001) # production
 #`ngrok http --url=maximum-pegasus-luckily.ngrok-free.app 5001`
 #SELECT setval('signees_id_seq', (SELECT MAX(id) FROM signees)+1);
