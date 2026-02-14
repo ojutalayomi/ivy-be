@@ -25,3 +25,4 @@ flask-socketio
 gevent
 gevent-websocket
 redis~=7.1.0
+resend~=2.21.0

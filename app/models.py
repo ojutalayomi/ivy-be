@@ -280,7 +280,7 @@ class Signee(db.Model):
     created_at = mapped_column(DateTime(timezone=True), default=datetime.now)
     email_confirmed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     birth_date: Mapped[date] = mapped_column(Date, nullable=False)
-    gender = mapped_column(String(5), nullable=False)
+    gender = mapped_column(String(10), nullable=False)
     can_pay_partially: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
